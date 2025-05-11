@@ -29,7 +29,6 @@ class JavaResolversVisitor extends visitor_plugin_common_1.BaseVisitor {
             allImports.push(`java.util.Map`);
         }
         if (this._addListImport) {
-            allImports.push(`java.util.ArrayList`);
             allImports.push(`java.util.List`);
             allImports.push(`java.util.stream.Collectors`);
         }
@@ -155,15 +154,9 @@ class JavaResolversVisitor extends visitor_plugin_common_1.BaseVisitor {
 }`, 3);
                 }
                 return (0, visitor_plugin_common_1.indentMultiline)(`if (args.get("${arg.name.value}") != null) {
-  this.${arg.name.value} = new ArrayList<${typeToUse.baseType}>();
-  for (var o : (${this.config.listType}<Map<String, Object>>) args.get("${arg.name.value}")) {
-    if (o != null) {
-      this.${arg.name.value}.add(new ${typeToUse.baseType}(o));
-    }
-    else {
-      this.${arg.name.value}.add(null);
-    }
-  }
+  this.${arg.name.value} = ((${this.config.listType}<Map<String, Object>>) args.get("${arg.name.value}")).stream()
+    .map(o -> o == null ? null : new ${typeToUse.baseType}(o))
+    .collect(Collectors.toList());
 }`, 3);
             }
             if (typeToUse.isScalar) {
